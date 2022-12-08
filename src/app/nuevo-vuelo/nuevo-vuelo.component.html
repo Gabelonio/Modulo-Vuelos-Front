@@ -1,0 +1,201 @@
+<div class = "main-container">
+    <div class = "segmentos-container">
+      <h1>Nuevo vuelo</h1>
+      <div>
+        <form [formGroup]="formularioNuevoVuelo">
+          <mat-form-field appearance="fill" class = "forma-input">
+            <mat-label>Aerolinea</mat-label>
+            <mat-select [formControl]="nuevoVueloAerolinea">
+              <mat-option *ngFor="let aerolinea of aerolineasCargadas" [value]="aerolinea.airlinecodePk" >
+                {{aerolinea.airlinename}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="nuevoVueloAerolinea.invalid">{{getErrorMensaje(nuevoVueloAerolinea, 'Aerolinea')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class = "forma-input">
+            <mat-label>No. Vuelo</mat-label>
+            <input matInput [readonly]="false" class = "forma-readonly" [formControl]="nuevoVueloNumeroVuelo"><!-- Cambiar el Readonly cuando se pueda generar automaticamente -->
+          </mat-form-field>
+          <mat-form-field disabled="fill">
+            <mat-label>Fecha de partida</mat-label>
+            <input matInput [matDatepicker]="picker" [formControl]="nuevoVueloFechaPartida">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="nuevoVueloFechaPartida.invalid">{{getErrorMensaje(nuevoVueloFechaPartida, 'Fecha de Partida')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class = "forma-input">
+            <mat-label>No. Segmentos</mat-label>
+            <input matInput type = "number"
+                  min = "1"
+                  [formControl]="numeroSegmentos">
+          </mat-form-field><!-- Formulario Vuelo General -->
+          <button
+            type = "button"
+            class = "boton-generar"
+            (click) = "generarFormulariosSegmentos()"
+            [disabled]="clickeadoGenerado" mat-raised-button>Generar
+          </button><!-- Boton para Generar Segmentos -->
+        </form>
+        <form [formGroup]="formularioSegmentos">
+          <div formArrayName="segmentos">
+            <div *ngFor = "let segmento of segmentosFormGroups.controls; let i = index" [formGroupName]="i">
+              <h3>Seccion {{i+1}}</h3>
+              <mat-form-field appearance="fill" class = "forma-input">
+                <mat-label>Aeropuerto</mat-label>
+                <mat-select formControlName="aeropuerto">
+                  <mat-option *ngFor="let aeropuerto of aeropuertosCargados" [value]="aeropuerto.airport_AirportCode_PK" >
+                    {{aeropuerto.airport_AirportName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class = "forma-input">
+                <mat-label>Horas Vuelo</mat-label>
+                <input matInput
+                       type = "number"
+                       formControlName="horasVuelo"
+                       min = "1"
+                >
+              </mat-form-field>
+              <mat-form-field appearance="fill" class = "forma-input">
+                <mat-label>Piloto</mat-label>
+                <mat-select formControlName="piloto">
+                  <mat-option *ngFor="let piloto of pilotosCargados" [value]="piloto.pilotlicensePk" >
+                    {{piloto.pilotName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div><!-- Formularios de Segmentos-->
+        </form>
+      </div>
+    </div><!-- Formulario Generador de Segmentos -->
+    <form [formGroup]="formularioConexion" (ngSubmit)="registrarVuelo()">
+      <div class = "conexion-container">
+        <section>
+          <mat-checkbox (change)="cambiarConexionHabilitada($event.checked)">
+            <h1>Conexion</h1>
+          </mat-checkbox>
+        </section><!-- Checkbox conexion -->
+          <div *ngIf = "isConexionHabilitada">
+            <mat-form-field appearance="fill" class = "forma-input">
+              <mat-label>Aerolinea</mat-label>
+              <mat-select [formControl]="conexionAerolinea">
+                <mat-option *ngFor="let aerolinea of aerolineasCargadas" [value]="aerolinea.airlinecodePk" >
+                  {{aerolinea.airlinename}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="conexionAerolinea.invalid">{{getErrorMensaje(conexionAerolinea, 'Aerolinea')}}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class = "forma-input">
+              <mat-label>No. Vuelo</mat-label>
+              <mat-select [formControl]="conexionNumeroVuelo">
+                <mat-option *ngFor="let food of foods" [value]="food.value">
+                  {{food.viewValue}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="conexionNumeroVuelo.invalid">{{getErrorMensaje(conexionNumeroVuelo, 'No. Vuelo')}}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class = "forma-input">
+              <mat-label>Aeropuerto</mat-label>
+              <mat-select [formControl]="conexionAeropuerto">
+                <mat-option *ngFor="let food of foods" [value]="food.value">
+                  {{food.viewValue}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="conexionAeropuerto.invalid">{{getErrorMensaje(conexionAeropuerto, 'Conexion')}}</mat-error>
+            </mat-form-field>
+            <div>
+            </div>
+          </div><!-- Formulario de Conexion -->
+      </div>
+      <div class = "seccion-registrar">
+        <button type = "submit" class = "boton-aceptar" mat-raised-button>Registrar</button>
+      </div>
+    </form>
+    <div class = "segmentos-viewer" *ngIf = "isSegmentosDisponibles">
+      <h1>Segmentos</h1>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class = "conexion-viewer" *ngIf = "isConexionDisponible">
+      <h1>Conexion</h1>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="segmento-card">
+        <mat-card-content>
+          <p>Vuelo : </p>
+          <p>Aerolinea : </p>
+          <p>Aeropuerto : </p>
+          <p>Ciudad : </p>
+          <p>Estado : </p>
+          <p>Pais : </p>
+          <p>Fecha : </p>
+          <p>Hora : </p>
+          <p>Piloto : </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</div>
+
