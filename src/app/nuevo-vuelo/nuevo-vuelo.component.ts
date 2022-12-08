@@ -5,6 +5,7 @@ import { GestorVuelosService } from '../servicios/gestor-vuelos.service';
 import { Aerolinea } from '../modelos/aerolinea.model';
 import { Aeropuerto } from '../modelos/aeropuerto.model';
 import { Piloto } from '../modelos/piloto.model';
+import { Vuelo } from '../modelos/vuelo.model';
 
 interface Food {
   value: string;
@@ -32,13 +33,10 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   public aeropuertosCargados : Aeropuerto[] = [];
   public pilotsSuscripcion : Subscription;
   public pilotosCargados : Piloto[] = [];
-
-
-  foods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
+  /* ================================================================================================ */
+  public vuelosFromAerolinea : Vuelo[] = [];
+  public vuelosSuscripcion: Subscription;
+  public aeropuertosFromVuelo : Aeropuerto[] = [];
 
   cambiarConexionHabilitada(habilitado : boolean){
     this.isConexionHabilitada = habilitado;
@@ -62,6 +60,22 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
       'horasVuelo': new FormControl( 1, Validators.required),
       'piloto' : new FormControl('', Validators.required)
     })
+  }
+
+  public getVuelosFromAerolinea(evento : Event){
+    /* OBTENCION DE LOS VUELOS AL SELECCIONAR UNA AEROLINEA */
+    this.gestorVuelosService.getVuelosFromAerolinea(
+      this.formularioConexion.value['conexionAerolinea']).subscribe((vuelos) => {
+      this.vuelosFromAerolinea = vuelos;
+    });
+  }
+
+  public getAeropuertosFromVuelo(evento : Event){
+    console.log(this.formularioConexion.value['conexionNumeroVuelo']);
+    this.gestorVuelosService.getAeropuertosFromVuelo(
+      this.formularioConexion.value['conexionNumeroVuelo']).subscribe((aeropuertos)=> {
+        this.aeropuertosFromVuelo = aeropuertos;
+      });
   }
 
 
@@ -135,6 +149,8 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   ngOnDestroy(){
     this.airlinesSuscripcion.unsubscribe();
     this.airportsSuscripcion.unsubscribe();
+    this.pilotsSuscripcion.unsubscribe();
+    this.vuelosSuscripcion.unsubscribe();
   }
 
   /* Funciones Referentes a la validacion de datos */

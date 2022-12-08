@@ -1,6 +1,6 @@
 export class Vuelo{
   constructor(
-    public airlineCode : string,
-    public vueloNumber: string
+    public flightAirlinecodePk : string,
+    public flightnumberPk: string
   ){}
 }

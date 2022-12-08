@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, retry }  from "rxjs/operators";
 import { Observable, Subject, throwError } from "rxjs";
@@ -41,9 +41,11 @@ export class GestorVuelosService {
 
   /* Obtener los vuelos de una aerolinea */
   /* SELECT * FROM FLIGHT WHERE FLIGHT_AIRLINECODE_PK = {{valorseleccionado}}; */
-  getVuelosFromAerolinea(aerolineaSeleccionada : Aerolinea): Observable<Vuelo[]> {
+  getVuelosFromAerolinea(aerolineaSeleccionada : string): Observable<Vuelo[]> {
     /* Cambiar la ruta al obtener la API */
-    return this.http.get<Vuelo[]>(this.URL+'/index'+aerolineaSeleccionada.airlinecodePk,{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("aerolinea", aerolineaSeleccionada);
+    return this.http.get<Vuelo[]>(this.URL+'/vuelos/getVuelosFromAerolinea',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 
   /* Obtener todos los aeropuertos */
@@ -55,9 +57,11 @@ export class GestorVuelosService {
 
   /* Obtener todos los aeropuertos referentes a un vuelo*/
   /* SELECT * FROM AIRPORT WHERE AIRPORTCODE LIKE {{UN SUBQUERY QUE SE REALIZA A TRAVES DEL VUELO SELECCIONADO Y LOS SEGMENTOS DE VUELO QUE COINCIDEN}}; */
-  getAeropuertosFromVuelo(vueloSeleccionado : Vuelo): Observable<Aeropuerto[]> {
+  getAeropuertosFromVuelo(vueloSeleccionado : string): Observable<Aeropuerto[]> {
     /* Cambiar la ruta al obtener la API */
-    return this.http.get<Aeropuerto[]>(this.URL+'/index',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("vuelo", vueloSeleccionado);
+    return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertosFromVuelo',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 
   /* Obtener todas las aerolineas */

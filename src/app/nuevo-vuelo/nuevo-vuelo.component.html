@@ -80,7 +80,7 @@
           <div *ngIf = "isConexionHabilitada">
             <mat-form-field appearance="fill" class = "forma-input">
               <mat-label>Aerolinea</mat-label>
-              <mat-select [formControl]="conexionAerolinea">
+              <mat-select [formControl]="conexionAerolinea" (selectionChange)="getVuelosFromAerolinea($event.value)">
                 <mat-option *ngFor="let aerolinea of aerolineasCargadas" [value]="aerolinea.airlinecodePk" >
                   {{aerolinea.airlinename}}
                 </mat-option>
@@ -89,9 +89,9 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class = "forma-input">
               <mat-label>No. Vuelo</mat-label>
-              <mat-select [formControl]="conexionNumeroVuelo">
-                <mat-option *ngFor="let food of foods" [value]="food.value">
-                  {{food.viewValue}}
+              <mat-select [formControl]="conexionNumeroVuelo" (selectionChange)="getAeropuertosFromVuelo($event.value)">
+                <mat-option *ngFor="let vuelo of vuelosFromAerolinea" [value]="vuelo.flightnumberPk">
+                  {{vuelo.flightnumberPk}}
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="conexionNumeroVuelo.invalid">{{getErrorMensaje(conexionNumeroVuelo, 'No. Vuelo')}}</mat-error>
@@ -99,8 +99,8 @@
             <mat-form-field appearance="fill" class = "forma-input">
               <mat-label>Aeropuerto</mat-label>
               <mat-select [formControl]="conexionAeropuerto">
-                <mat-option *ngFor="let food of foods" [value]="food.value">
-                  {{food.viewValue}}
+                <mat-option *ngFor="let aeropuerto of aeropuertosFromVuelo" [value]="aeropuerto.airport_AirportCode_PK">
+                  {{aeropuerto.airport_AirportName}}
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="conexionAeropuerto.invalid">{{getErrorMensaje(conexionAeropuerto, 'Conexion')}}</mat-error>
