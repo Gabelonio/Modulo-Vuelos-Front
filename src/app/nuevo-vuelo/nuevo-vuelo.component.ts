@@ -62,6 +62,21 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
     })
   }
 
+  public asignarNumeroVuelo(evento : Event){
+    /* OBTENCION DE LOS VUELOS AL SELECCIONAR UNA AEROLINEA y SE ASIGNA SEGUN LA CANTIDAD DE VUELOS REALIZADOS*/
+    this.gestorVuelosService.getVuelosFromAerolinea(
+      this.formularioNuevoVuelo.value['nuevoVueloAerolinea']).subscribe((vuelos) => {
+      console.log(vuelos.length);
+      const numeroNuevoVuelo = ((vuelos.length+1) >= 100)
+                                ?(vuelos.length+1)
+                                  :(vuelos.length+1 >= 10)
+                                    ?'0' + (vuelos.length+1)
+                                      :'00' + (vuelos.length+1);
+      this.formularioNuevoVuelo.patchValue({nuevoVueloNumeroVuelo : numeroNuevoVuelo});
+    });
+  }
+
+
   public getVuelosFromAerolinea(evento : Event){
     /* OBTENCION DE LOS VUELOS AL SELECCIONAR UNA AEROLINEA */
     this.gestorVuelosService.getVuelosFromAerolinea(
@@ -71,13 +86,13 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   }
 
   public getAeropuertosFromVuelo(evento : Event){
+    /* OBTENCION DE LOS AEROPUERTOS AL SELECCIONAR UN VUELO */
     console.log(this.formularioConexion.value['conexionNumeroVuelo']);
     this.gestorVuelosService.getAeropuertosFromVuelo(
       this.formularioConexion.value['conexionNumeroVuelo']).subscribe((aeropuertos)=> {
         this.aeropuertosFromVuelo = aeropuertos;
       });
   }
-
 
   /* CONFIGURACION DE LOS DIFERENTES FORMULARIOS */
   public formularioNuevoVuelo: FormGroup;
@@ -113,19 +128,15 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
     /* OBTENCION DE LAS AEROLINEAS EN EL MENU DE NUEVO VUELO */
     this.airlinesSuscripcion = this.gestorVuelosService.getAerolineas().subscribe((aerolineas) => {
       this.aerolineasCargadas = aerolineas;
-      console.log(this.aerolineasCargadas);
     });
     /* OBTENCION DE LOS AEROPUERTOS EN EL MENU DE SECCIONES */
     this.airportsSuscripcion = this.gestorVuelosService.getAeropuertos().subscribe((aeropuertos) => {
       this.aeropuertosCargados = aeropuertos;
-      console.log(this.aeropuertosCargados);
     })
     /* OBTENCION DE LOS PILOTOS EN EL MENU DE SECCIONES */
     this.pilotsSuscripcion = this.gestorVuelosService.getPilotos().subscribe((pilotos) => {
       this.pilotosCargados = pilotos;
-      console.log(this.pilotosCargados);
     })
-
 
     this.formularioSegmentos = this.formBuilder.group({
       segmentos: this.formBuilder.array([])

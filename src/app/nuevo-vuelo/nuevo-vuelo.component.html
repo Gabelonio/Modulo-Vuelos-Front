@@ -5,7 +5,7 @@
         <form [formGroup]="formularioNuevoVuelo">
           <mat-form-field appearance="fill" class = "forma-input">
             <mat-label>Aerolinea</mat-label>
-            <mat-select [formControl]="nuevoVueloAerolinea">
+            <mat-select [formControl]="nuevoVueloAerolinea" (selectionChange)="asignarNumeroVuelo($event.value)">
               <mat-option *ngFor="let aerolinea of aerolineasCargadas" [value]="aerolinea.airlinecodePk" >
                 {{aerolinea.airlinename}}
               </mat-option>
@@ -14,7 +14,7 @@
           </mat-form-field>
           <mat-form-field appearance="fill" class = "forma-input">
             <mat-label>No. Vuelo</mat-label>
-            <input matInput [readonly]="false" class = "forma-readonly" [formControl]="nuevoVueloNumeroVuelo"><!-- Cambiar el Readonly cuando se pueda generar automaticamente -->
+            <input matInput [readonly]="true" class = "forma-readonly" [formControl]="nuevoVueloNumeroVuelo"><!-- Cambiar el Readonly cuando se pueda generar automaticamente -->
           </mat-form-field>
           <mat-form-field disabled="fill">
             <mat-label>Fecha de partida</mat-label>
