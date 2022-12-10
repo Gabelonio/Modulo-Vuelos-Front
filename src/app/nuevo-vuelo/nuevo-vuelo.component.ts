@@ -6,11 +6,9 @@ import { Aerolinea } from '../modelos/aerolinea.model';
 import { Aeropuerto } from '../modelos/aeropuerto.model';
 import { Piloto } from '../modelos/piloto.model';
 import { Vuelo } from '../modelos/vuelo.model';
+import { SegmentoVuelo } from '../modelos/segmentoVuelo.model';
+import { PilotoAsignacion } from '../modelos/pilotoAsignacion.model';
 
-interface Food {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-nuevo-vuelo',
@@ -75,8 +73,12 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
       this.formularioNuevoVuelo.patchValue({nuevoVueloNumeroVuelo : numeroNuevoVuelo});
     });
   }
-
-
+  public getPilotosFromAerolinea(evento : Event){
+    this.gestorVuelosService.getPilotosFromAerolinea(
+      this.formularioNuevoVuelo.value['nuevoVueloAerolinea']).subscribe((pilotos) => {
+        this.pilotosCargados = pilotos;
+      });
+  }
   public getVuelosFromAerolinea(evento : Event){
     /* OBTENCION DE LOS VUELOS AL SELECCIONAR UNA AEROLINEA */
     this.gestorVuelosService.getVuelosFromAerolinea(
@@ -84,10 +86,8 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
       this.vuelosFromAerolinea = vuelos;
     });
   }
-
   public getAeropuertosFromVuelo(evento : Event){
     /* OBTENCION DE LOS AEROPUERTOS AL SELECCIONAR UN VUELO */
-    console.log(this.formularioConexion.value['conexionNumeroVuelo']);
     this.gestorVuelosService.getAeropuertosFromVuelo(
       this.formularioConexion.value['conexionNumeroVuelo']).subscribe((aeropuertos)=> {
         this.aeropuertosFromVuelo = aeropuertos;
@@ -134,9 +134,9 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
       this.aeropuertosCargados = aeropuertos;
     })
     /* OBTENCION DE LOS PILOTOS EN EL MENU DE SECCIONES */
-    this.pilotsSuscripcion = this.gestorVuelosService.getPilotos().subscribe((pilotos) => {
+    /* this.pilotsSuscripcion = this.gestorVuelosService.getPilotos().subscribe((pilotos) => {
       this.pilotosCargados = pilotos;
-    })
+    }) */
 
     this.formularioSegmentos = this.formBuilder.group({
       segmentos: this.formBuilder.array([])
@@ -172,6 +172,34 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   public registrarVuelo(){
     console.log("Se presiona registrar vuelo");
     if(this.formularioNuevoVuelo.valid && this.formularioSegmentos.valid && this.clickeadoGenerado){
+      this.gestorVuelosService.registrarVuelo(
+        new Vuelo(
+          this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
+          this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
+      )).subscribe(() => {
+        for(let i = 0; i < this.formularioSegmentos.value['segmentos'].length - 1; i++){
+          this.gestorVuelosService.registrarSegmentoVuelo(
+            new SegmentoVuelo(
+              this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
+              this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
+              this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
+              this.formularioSegmentos.value['segmentos'][i+1]['aeropuerto'],
+              this.formularioNuevoVuelo.value['nuevoVueloFechaPartida'],
+              this.formularioSegmentos.value['segmentos'][i]['horasVuelo']
+          )).subscribe(() => {
+            /* for(let i = 0; i < this.formularioSegmentos.value['segmentos'].length; i++){ */
+              this.gestorVuelosService.registrarAsignacionPiloto(
+                new PilotoAsignacion(
+                  this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
+                  this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
+                  this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
+                  this.formularioSegmentos.value['segmentos'][i]['piloto']
+              )).subscribe();
+/*             } */
+          })
+        }
+      });
+
       console.log(this.formularioNuevoVuelo.value);
       console.log(this.formularioSegmentos.value);
       this.isSegmentosDisponibles = true;

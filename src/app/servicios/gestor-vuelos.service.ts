@@ -6,6 +6,8 @@ import { Aerolinea } from '../modelos/aerolinea.model';
 import { Vuelo } from '../modelos/vuelo.model';
 import { Aeropuerto } from '../modelos/aeropuerto.model';
 import { Piloto } from '../modelos/piloto.model';
+import { SegmentoVuelo } from '../modelos/segmentoVuelo.model';
+import { PilotoAsignacion } from '../modelos/pilotoAsignacion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,20 +29,39 @@ export class GestorVuelosService {
   constructor(private http: HttpClient) {}
 
   /* Obtener todas las aerolineas */
-  /* SELECT * FROM AIRLINE; */
   getAerolineas(): Observable<Aerolinea[]> {
     return this.http.get<Aerolinea[]>(this.URL+'/aerolineas/getAerolineas',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
   }
 
-  /* Obtener todas las aerolineas */
-  /* SELECT * FROM FLIGHT; */
+  /* Obtener todos los vuelos */
   getVuelos(): Observable<Vuelo[]> {
                                       /* Cambiar la ruta al obtener la API */
     return this.http.get<Vuelo[]>(this.URL+'/index',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
   }
 
+  /* Registrar un nuevo vuelo */
+  registrarVuelo(nuevoVuelo : Vuelo): Observable<Vuelo> {
+    console.log(JSON.stringify(nuevoVuelo));
+    return this.http.post<Vuelo>(
+        this.URL+'/vuelos/setVuelo',
+        JSON.stringify(nuevoVuelo),
+        this.httpOptions
+      )
+      .pipe(retry(1), catchError(this.handleError));
+  }
+
+  /* Registrar un nuevo segmento de vuelo */
+  registrarSegmentoVuelo(nuevoSegmentVuelo : SegmentoVuelo): Observable<SegmentoVuelo> {
+    console.log(JSON.stringify(nuevoSegmentVuelo));
+    return this.http.post<SegmentoVuelo>(
+        this.URL+'/segmentosVuelos/setSegmentoVuelo',
+        JSON.stringify(nuevoSegmentVuelo),
+        this.httpOptions
+      )
+      .pipe(retry(1), catchError(this.handleError));
+  }
+
   /* Obtener los vuelos de una aerolinea */
-  /* SELECT * FROM FLIGHT WHERE FLIGHT_AIRLINECODE_PK = {{valorseleccionado}}; */
   getVuelosFromAerolinea(aerolineaSeleccionada : string): Observable<Vuelo[]> {
     /* Cambiar la ruta al obtener la API */
     let queryParametros = new HttpParams();
@@ -49,26 +70,38 @@ export class GestorVuelosService {
   }
 
   /* Obtener todos los aeropuertos */
-  /* SELECT * FROM AIRPORT; */
   getAeropuertos(): Observable<Aeropuerto[]> {
-                                      /* Cambiar la ruta al obtener la API */
     return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertos',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
   }
 
-  /* Obtener todos los aeropuertos referentes a un vuelo*/
-  /* SELECT * FROM AIRPORT WHERE AIRPORTCODE LIKE {{UN SUBQUERY QUE SE REALIZA A TRAVES DEL VUELO SELECCIONADO Y LOS SEGMENTOS DE VUELO QUE COINCIDEN}}; */
-  getAeropuertosFromVuelo(vueloSeleccionado : string): Observable<Aeropuerto[]> {
-    /* Cambiar la ruta al obtener la API */
+  /* Obtener todos los aeropuertos referentes a un vuelo */
+   getAeropuertosFromVuelo(vueloSeleccionado : string): Observable<Aeropuerto[]> {
     let queryParametros = new HttpParams();
     queryParametros = queryParametros.append("vuelo", vueloSeleccionado);
     return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertosFromVuelo',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 
-  /* Obtener todas las aerolineas */
-  /* SELECT * FROM PILOT; */
+  /* Obtener todos los pilotos */
   getPilotos(): Observable<Piloto[]> {
-                                      /* Cambiar la ruta al obtener la API */
     return this.http.get<Piloto[]>(this.URL+'/pilotos/getPilotos',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
+  }
+
+  /* Obtener todos los pilotos de una aerolinea */
+  getPilotosFromAerolinea(aerolineaSelecionada : string): Observable<Piloto[]> {
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("aerolinea", aerolineaSelecionada);
+    return this.http.get<Piloto[]>(this.URL+'/pilotos/getPilotosFromAerolinea', {responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
+  }
+
+  /* Registrar una nueva asignacion de piloto */
+  registrarAsignacionPiloto(nuevaPilotoAsignacion : PilotoAsignacion): Observable<PilotoAsignacion> {
+    console.log(JSON.stringify(nuevaPilotoAsignacion));
+    return this.http.post<PilotoAsignacion>(
+        this.URL+'/pilotosAsignados/setAsignarPiloto',
+        JSON.stringify(nuevaPilotoAsignacion),
+        this.httpOptions
+      )
+      .pipe(retry(1), catchError(this.handleError));
   }
 
   // Error handling

@@ -5,7 +5,7 @@
         <form [formGroup]="formularioNuevoVuelo">
           <mat-form-field appearance="fill" class = "forma-input">
             <mat-label>Aerolinea</mat-label>
-            <mat-select [formControl]="nuevoVueloAerolinea" (selectionChange)="asignarNumeroVuelo($event.value)">
+            <mat-select [formControl]="nuevoVueloAerolinea" (selectionChange)="asignarNumeroVuelo($event.value);getPilotosFromAerolinea($event.value)">
               <mat-option *ngFor="let aerolinea of aerolineasCargadas" [value]="aerolinea.airlinecodePk" >
                 {{aerolinea.airlinename}}
               </mat-option>
@@ -49,7 +49,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field appearance="fill" class = "forma-input">
+              <mat-form-field appearance="fill" class = "forma-input" *ngIf = "i !== segmentosFormGroups.length - 1">
                 <mat-label>Horas Vuelo</mat-label>
                 <input matInput
                        type = "number"
@@ -57,7 +57,7 @@
                        min = "1"
                 >
               </mat-form-field>
-              <mat-form-field appearance="fill" class = "forma-input">
+              <mat-form-field appearance="fill" class = "forma-input" *ngIf = "i !== segmentosFormGroups.length - 1">
                 <mat-label>Piloto</mat-label>
                 <mat-select formControlName="piloto">
                   <mat-option *ngFor="let piloto of pilotosCargados" [value]="piloto.pilotlicensePk" >
