@@ -24,6 +24,7 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   public isConexionDisponible : boolean = false;
   public clickeadoGenerado : boolean = false;
   public numeroFormulariosSegmentos : number = 0;
+  public registroConexionRealizada : boolean = false;
 
   /* Variables que gestionan el funcionamiento de los llamados desde la base de datos hasta la vista */
   public airlinesSuscripcion : Subscription;
@@ -42,22 +43,28 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   }
 
   generarFormulariosSegmentos(){
-    /* PARA VOLVER A GENERAR, ELIMINAR LOS REGISTROS DE SEGMENTOS ANTERIORES Y VOLVER A AGREGAR */
     this.clickeadoGenerado = true;
     this.numeroFormulariosSegmentos = this.formularioNuevoVuelo.value['numeroSegmentos'] + 1;
     for(let i = 0;i < this.formularioNuevoVuelo.value['numeroSegmentos'] + 1;i++){
-      this.agregarSegmento();
+      this.agregarSegmento(i === this.formularioNuevoVuelo.value['numeroSegmentos']);
     }
   }
-  private agregarSegmento() {
-    const emails = this.formularioSegmentos.get('segmentos') as FormArray;
-    emails.push(this.createSegmentoFormGroup());
+  private agregarSegmento(isUltimoSegmento : boolean) {
+    const segmentos = this.formularioSegmentos.get('segmentos') as FormArray;
+    segmentos.push((isUltimoSegmento)?this.createUltimoSegmentoFormGroup():this.createSegmentoFormGroup());
   }
   private createSegmentoFormGroup(): FormGroup {
     return new FormGroup({
       'aeropuerto': new FormControl('', Validators.required),
       'horasVuelo': new FormControl( 1, Validators.required),
       'piloto' : new FormControl('', Validators.required)
+    })
+  }
+  private createUltimoSegmentoFormGroup(): FormGroup {
+    return new FormGroup({
+      'aeropuerto': new FormControl('', Validators.required),
+      'horasVuelo': new FormControl( 1,),
+      'piloto' : new FormControl('',)
     })
   }
 
@@ -176,7 +183,10 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
 
   public registrarVuelo(){
     console.log("Se presiona registrar vuelo");
+    this.formularioSegmentos.value['segmentos'][this.formularioSegmentos.value['segmentos'].length - 1]['piloto'] = "pilotoDummy";
+    console.log(this.formularioSegmentos.value['segmentos']);
     if(this.formularioNuevoVuelo.valid && this.formularioSegmentos.valid && this.clickeadoGenerado){
+      this.isSegmentosDisponibles = true;
       this.gestorVuelosService.registrarVuelo(
         new Vuelo(
           this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
@@ -187,8 +197,8 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
             new SegmentoVuelo(
               this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
               this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
-              this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
               this.formularioSegmentos.value['segmentos'][i+1]['aeropuerto'],
+              this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
               this.formularioNuevoVuelo.value['nuevoVueloFechaPartida'],
               this.formularioSegmentos.value['segmentos'][i]['horasVuelo']
           )).subscribe(() => {
@@ -197,26 +207,36 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
                 new PilotoAsignacion(
                   this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
                   this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
-                  this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
+                  this.formularioSegmentos.value['segmentos'][i+1]['aeropuerto'],
                   this.formularioSegmentos.value['segmentos'][i]['piloto']
               )).subscribe(() => {
-                /* this.isSegmentosDisponibles = true;
-                if(this.isConexionHabilitada && this.formularioConexion.valid){
-                  console.log(this.formularioConexion.value);
-                  this.gestorVuelosService.registrarConexion(
-                    new Conexion(
-
-                    )
-                  )
+                if(this.isConexionHabilitada && this.formularioConexion.valid && !this.registroConexionRealizada){
                   this.isConexionDisponible = true;
-                } *//* Nuevo Vuelo con Conexion */
+                  this.gestorVuelosService.getAeropuertoDestinoFromSegmentosDeVuelo(
+                    this.formularioConexion.value['conexionAerolinea'],
+                    this.formularioConexion.value['conexionNumeroVuelo'],
+                    this.formularioConexion.value['conexionAeropuerto']
+                  ).subscribe((aeropuertoDestino) => {
+                    console.log("se registra conexion");
+                    this.gestorVuelosService.registrarConexion(
+                      new Conexion(
+                        this.formularioConexion.value['conexionAerolinea'],
+                        this.formularioConexion.value['conexionNumeroVuelo'],
+                        aeropuertoDestino[0],
+                        this.formularioNuevoVuelo.value['nuevoVueloAerolinea'],
+                        this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
+                        this.formularioConexion.value['conexionAeropuerto']
+                      )
+                    ).subscribe();
+                    this.registroConexionRealizada = true;
+                  })
+                }/* Nuevo Vuelo con Conexion */
                 /* Nuevo Vuelo sin Conexion */
             });
-/*             } */
           })
         }
       });
-
+      this.registroConexionRealizada = false;
       /* console.log(this.formularioNuevoVuelo.value);
       console.log(this.formularioSegmentos.value); */
       this.isSegmentosDisponibles = true;

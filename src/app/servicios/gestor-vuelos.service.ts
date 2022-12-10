@@ -73,9 +73,21 @@ export class GestorVuelosService {
       .pipe(retry(1), catchError(this.handleError));
   }
 
+  /* OBTENER EL AEROPUERTO DESTINO REFERENTE A UNA AEROLINEA, VUELO Y AEROPUERTO ORIGEN SELECCIONADO */
+  getAeropuertoDestinoFromSegmentosDeVuelo
+    (aerolineaConexion : string, numeroVueloConexion : string, aeropuertoOrigen : string) : Observable<string[]> {
+      let queryParametros = new HttpParams();
+      queryParametros = queryParametros.append("aerolinea", aerolineaConexion);
+      queryParametros = queryParametros.append("numeroVuelo", numeroVueloConexion);
+      queryParametros = queryParametros.append("aeropuertoOrigen", aeropuertoOrigen);
+      return this.http.get<string[]>(
+        this.URL+'/aeropuertos/getAeropuertoDestinoFromSegmentosDeVuelo',
+        {responseType : 'json', params: queryParametros}).pipe(retry(1),
+        catchError(this.handleError));
+  }
+
   /* Obtener los vuelos de una aerolinea */
   getVuelosFromAerolinea(aerolineaSeleccionada : string): Observable<Vuelo[]> {
-    /* Cambiar la ruta al obtener la API */
     let queryParametros = new HttpParams();
     queryParametros = queryParametros.append("aerolinea", aerolineaSeleccionada);
     return this.http.get<Vuelo[]>(this.URL+'/vuelos/getVuelosFromAerolinea',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
