@@ -8,6 +8,7 @@ import { Aeropuerto } from '../modelos/aeropuerto.model';
 import { Piloto } from '../modelos/piloto.model';
 import { SegmentoVuelo } from '../modelos/segmentoVuelo.model';
 import { PilotoAsignacion } from '../modelos/pilotoAsignacion.model';
+import { Conexion } from '../modelos/conexion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +62,17 @@ export class GestorVuelosService {
       .pipe(retry(1), catchError(this.handleError));
   }
 
+  /* Registrar una nueva conexion */
+  registrarConexion(nuevaConexion : Conexion): Observable<Conexion> {
+    console.log(JSON.stringify(nuevaConexion));
+    return this.http.post<Conexion>(
+        this.URL+'/conexiones/setConexion',
+        JSON.stringify(nuevaConexion),
+        this.httpOptions
+      )
+      .pipe(retry(1), catchError(this.handleError));
+  }
+
   /* Obtener los vuelos de una aerolinea */
   getVuelosFromAerolinea(aerolineaSeleccionada : string): Observable<Vuelo[]> {
     /* Cambiar la ruta al obtener la API */
@@ -74,10 +86,11 @@ export class GestorVuelosService {
     return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertos',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
   }
 
-  /* Obtener todos los aeropuertos referentes a un vuelo */
-   getAeropuertosFromVuelo(vueloSeleccionado : string): Observable<Aeropuerto[]> {
+  /* Obtener todos los aeropuertos referentes a un vuelo (Conexion) */
+   getAeropuertosFromVuelo(vueloSeleccionado : string, aeropuertosDestinoRelacionados : string[]): Observable<Aeropuerto[]> {
     let queryParametros = new HttpParams();
     queryParametros = queryParametros.append("vuelo", vueloSeleccionado);
+    queryParametros = queryParametros.append("aeropuertos", aeropuertosDestinoRelacionados.join(', '))
     return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertosFromVuelo',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 

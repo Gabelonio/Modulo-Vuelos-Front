@@ -8,6 +8,7 @@ import { Piloto } from '../modelos/piloto.model';
 import { Vuelo } from '../modelos/vuelo.model';
 import { SegmentoVuelo } from '../modelos/segmentoVuelo.model';
 import { PilotoAsignacion } from '../modelos/pilotoAsignacion.model';
+import { Conexion } from '../modelos/conexion.model';
 
 
 @Component({
@@ -87,9 +88,13 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
     });
   }
   public getAeropuertosFromVuelo(evento : Event){
+    let aeropuertosDestinoSeleccionados : string [] = [];
+    for(let i = 1 ; i < this.formularioSegmentos.value['segmentos'].length; i++ ){
+      aeropuertosDestinoSeleccionados.push(this.formularioSegmentos.value['segmentos'][i]['aeropuerto']);
+    }
     /* OBTENCION DE LOS AEROPUERTOS AL SELECCIONAR UN VUELO */
     this.gestorVuelosService.getAeropuertosFromVuelo(
-      this.formularioConexion.value['conexionNumeroVuelo']).subscribe((aeropuertos)=> {
+      this.formularioConexion.value['conexionNumeroVuelo'], aeropuertosDestinoSeleccionados).subscribe((aeropuertos)=> {
         this.aeropuertosFromVuelo = aeropuertos;
       });
   }
@@ -194,14 +199,26 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
                   this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],
                   this.formularioSegmentos.value['segmentos'][i]['aeropuerto'],
                   this.formularioSegmentos.value['segmentos'][i]['piloto']
-              )).subscribe();
+              )).subscribe(() => {
+                /* this.isSegmentosDisponibles = true;
+                if(this.isConexionHabilitada && this.formularioConexion.valid){
+                  console.log(this.formularioConexion.value);
+                  this.gestorVuelosService.registrarConexion(
+                    new Conexion(
+
+                    )
+                  )
+                  this.isConexionDisponible = true;
+                } *//* Nuevo Vuelo con Conexion */
+                /* Nuevo Vuelo sin Conexion */
+            });
 /*             } */
           })
         }
       });
 
-      console.log(this.formularioNuevoVuelo.value);
-      console.log(this.formularioSegmentos.value);
+      /* console.log(this.formularioNuevoVuelo.value);
+      console.log(this.formularioSegmentos.value); */
       this.isSegmentosDisponibles = true;
       if(this.isConexionHabilitada && this.formularioConexion.valid){
         console.log(this.formularioConexion.value);
