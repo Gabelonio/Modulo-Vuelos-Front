@@ -155,6 +155,7 @@ export class GestorVuelosService {
     queryParametros = queryParametros.append("aeropuertoOrigen", aeropuertoOrigen);
     queryParametros = queryParametros.append("aeropuertoDestino", aeropuertoDestino);
     queryParametros = queryParametros.append("fechaOrigen", fechaOrigen);
+    console.log(queryParametros);
     return this.http.get<Itinerario[]>(this.URL+'/itinerario/getItinerarios', {responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 

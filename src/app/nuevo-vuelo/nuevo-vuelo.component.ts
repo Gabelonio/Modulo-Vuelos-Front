@@ -188,6 +188,8 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   }
 
   public registrarVuelo(){
+    this.cuadrosInformativosNuevoVuelo = [];
+    this.cuadrosInformativosConexion = [];
     /*this.formularioSegmentos.value['segmentos'][this.formularioSegmentos.value['segmentos'].length - 1]['piloto'] = "pilotoDummy";*/
     if(this.formularioNuevoVuelo.valid && this.formularioSegmentos.valid && this.clickeadoGenerado){
       this.isSegmentosDisponibles = true;
@@ -235,6 +237,9 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
                   })
                 }
                 if(!this.isRegistroCuadrosNuevoVueloRealizado){
+                  for(let i=0; i < this.formularioSegmentos.value['segmentos'].length; i++){
+                    console.log(this.formularioSegmentos.value['segmentos'][i]['aeropuerto']);
+                  }
                   for(let i=0; i < this.formularioSegmentos.value['segmentos'].length; i++){
                     this.gestorVuelosService.getCuadrosInformativos(
                       this.formularioNuevoVuelo.value['nuevoVueloNumeroVuelo'],

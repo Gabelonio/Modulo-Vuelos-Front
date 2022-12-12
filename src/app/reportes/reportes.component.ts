@@ -44,6 +44,13 @@ export class ReportesComponent implements OnInit {
   generarItinerarios(): void {
     this.isItinerariosDisponibles = true;
     console.log("aqui se crean itinerarios");
+    this.gestorVuelosService.getItinerarios(
+      this.formularioItinerario.value['aeropuertoDestino'],
+      this.formularioItinerario.value['aeropuertoOrigen'],
+      this.formularioItinerario.value['fechaPartida'].toLocaleDateString('en-GB').split('/').reverse().join('-')
+    ).subscribe((itinerario) => {
+      console.log(itinerario);
+    })
   }
 
   /* Funciones Referentes a la validacion de datos */
