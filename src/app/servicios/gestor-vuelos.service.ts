@@ -9,6 +9,8 @@ import { Piloto } from '../modelos/piloto.model';
 import { SegmentoVuelo } from '../modelos/segmentoVuelo.model';
 import { PilotoAsignacion } from '../modelos/pilotoAsignacion.model';
 import { Conexion } from '../modelos/conexion.model';
+import { CuadroInformativo } from '../modelos/cuadroInformativo.model';
+import { Itinerario } from '../modelos/itinerario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -99,11 +101,20 @@ export class GestorVuelosService {
   }
 
   /* Obtener todos los aeropuertos referentes a un vuelo (Conexion) */
-   getAeropuertosFromVuelo(vueloSeleccionado : string, aeropuertosDestinoRelacionados : string[]): Observable<Aeropuerto[]> {
+  getAeropuertosFromVuelo(vueloSeleccionado : string, aeropuertosDestinoRelacionados : string[]): Observable<Aeropuerto[]> {
     let queryParametros = new HttpParams();
     queryParametros = queryParametros.append("vuelo", vueloSeleccionado);
-    queryParametros = queryParametros.append("aeropuertos", aeropuertosDestinoRelacionados.join(', '))
+    queryParametros = queryParametros.append("aeropuertos", aeropuertosDestinoRelacionados.join(', '));
     return this.http.get<Aeropuerto[]>(this.URL+'/aeropuertos/getAeropuertosFromVuelo',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
+  }
+
+  /* Obtener el aeropuerto destino referente a un vuelo, un aeropuerto origen y una aerolinea */
+  getAeropuertoDestinoFromVuelo(vuelo : string, aeropuerto : string, aerolinea : string ) : Observable<string[]> {
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("aerolinea", aerolinea);
+    queryParametros = queryParametros.append("numeroVuelo", vuelo);
+    queryParametros = queryParametros.append("aeropuertoOrigen", aeropuerto);
+    return this.http.get<string[]>(this.URL+'/aeropuertos/getAeropuertoDestinoFromSegmentosDeVuelo',{responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
   }
 
   /* Obtener todos los pilotos */
@@ -129,6 +140,24 @@ export class GestorVuelosService {
       .pipe(retry(1), catchError(this.handleError));
   }
 
+  /* Obtener los cuadros informativos al generar un nuevo vuelo */
+  getCuadrosInformativos(numeroVuelo : string, codigoAerolinea : string, codigoAeropuerto : string): Observable<CuadroInformativo[]>{
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("numeroVuelo", numeroVuelo);
+    queryParametros = queryParametros.append("codigoAerolinea", codigoAerolinea);
+    queryParametros = queryParametros.append("codigoAeropuerto", codigoAeropuerto);
+    return this.http.get<CuadroInformativo[]>(this.URL+'/cuadrosInformativos/getCuadrosInformativos', {responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
+  }
+
+  /* Obtener todos los itinerarios de vuelo */
+  getItinerarios(aeropuertoOrigen: string, aeropuertoDestino : string, fechaOrigen : string): Observable<Itinerario[]>{
+    let queryParametros = new HttpParams();
+    queryParametros = queryParametros.append("aeropuertoOrigen", aeropuertoOrigen);
+    queryParametros = queryParametros.append("aeropuertoDestino", aeropuertoDestino);
+    queryParametros = queryParametros.append("fechaOrigen", fechaOrigen);
+    return this.http.get<Itinerario[]>(this.URL+'/itinerario/getItinerarios', {responseType : 'json', params: queryParametros}).pipe(retry(1), catchError(this.handleError));
+  }
+
   // Error handling
   handleError(error: any) {
     let errorMessage = '';
@@ -146,41 +175,4 @@ export class GestorVuelosService {
   }
 
 
-
-
-  /* Obtener todos los empleados */
-/*   getEmpleados(): Observable<Empleado[]> {
-    /* EN ESTA SECCION SE UBICARIARIA OBTENCION DE TODOS LOS EMPLEADOS A TRAVES DE UNA CONSULTA
-    return this.http.get<Empleado[]>(this.URL+'/index',{responseType : 'json'}).pipe(retry(1), catchError(this.handleError));
-        }), catchError( errorResponse => {
-            return throwError(errorResponse);
-    });
-  }
-
-  // HttpClient API get() method => Fetch employee
-/*   getEmpleado(idEmpleado : number): Observable<Empleado> {
-    return this.http.get<Empleado>(this.URL + '/Empleado/' + idEmpleado).pipe(retry(1), catchError(this.handleError));
-  } */
-
-  /* Registro Empleado Nuevo */
-/*   registrarEmpleado(nuevoEmpleado : Empleado): Observable<Empleado> {
-    console.log(JSON.stringify(nuevoEmpleado));
-    return this.http.post<Empleado>(
-        this.URL+'/formInsertar',
-        JSON.stringify(nuevoEmpleado),
-        this.httpOptions
-      )
-      .pipe(retry(1), catchError(this.handleError));
-  } */
-
-  // HttpClient API put() method => Update employee
-/*   actualizarEmpleado(nuevaInformacion : Empleado): Observable<Empleado> {
-    return this.http
-      .put<Empleado>(
-        this.URL + '/modificar/' + nuevaInformacion.idEmpleado,
-        JSON.stringify(nuevaInformacion),
-        this.httpOptions
-      )
-      .pipe(retry(1), catchError(this.handleError));
-  } */
 }

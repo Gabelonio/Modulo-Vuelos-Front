@@ -115,85 +115,33 @@
     </form>
     <div class = "segmentos-viewer" *ngIf = "isSegmentosDisponibles">
       <h1>Segmentos</h1>
-      <mat-card class="segmento-card">
+      <mat-card class="segmento-card" *ngFor = "let vuelo of cuadrosInformativosNuevoVuelo">
         <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
-        </mat-card-content>
-      </mat-card>
-      <mat-card class="segmento-card">
-        <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
-        </mat-card-content>
-      </mat-card>
-      <mat-card class="segmento-card">
-        <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
+          <p>Vuelo : {{vuelo.aerolinea_vuelo}}{{vuelo.numero_vuelo}}</p>
+          <p>Aerolinea : {{vuelo.nombre_aerolinea}} </p>
+          <p>Aeropuerto : {{vuelo.nombre_aeropuerto}} </p>
+          <p>Ciudad : {{vuelo.ciudad_aeropuerto}} </p>
+          <p>{{vuelo.descripcion_division_aeropuerto}} : {{vuelo.nombre_division_aeropuerto}}</p>
+          <p>Pais : {{vuelo.nombre_pais_aeropuerto}}</p>
+          <p>Fecha : {{vuelo.fecha_vuelo | date}} </p>
+          <p>Hora : {{vuelo.duracion_vuelo}}</p>
+          <p>Piloto : {{vuelo.nombre_piloto}}</p>
         </mat-card-content>
       </mat-card>
     </div>
     <div class = "conexion-viewer" *ngIf = "isConexionDisponible">
       <h1>Conexion</h1>
-      <mat-card class="segmento-card">
+      <mat-card class="segmento-card" *ngFor = "let vuelo of cuadrosInformativosConexion">
         <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
-        </mat-card-content>
-      </mat-card>
-      <mat-card class="segmento-card">
-        <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
-        </mat-card-content>
-      </mat-card>
-      <mat-card class="segmento-card">
-        <mat-card-content>
-          <p>Vuelo : </p>
-          <p>Aerolinea : </p>
-          <p>Aeropuerto : </p>
-          <p>Ciudad : </p>
-          <p>Estado : </p>
-          <p>Pais : </p>
-          <p>Fecha : </p>
-          <p>Hora : </p>
-          <p>Piloto : </p>
+          <p>Vuelo : {{vuelo.aerolinea_vuelo}}{{vuelo.numero_vuelo}}</p>
+          <p>Aerolinea : {{vuelo.nombre_aerolinea}} </p>
+          <p>Aeropuerto : {{vuelo.nombre_aeropuerto}} </p>
+          <p>Ciudad : {{vuelo.ciudad_aeropuerto}} </p>
+          <p>{{vuelo.descripcion_division_aeropuerto}} : {{vuelo.nombre_division_aeropuerto}}</p>
+          <p>Pais : {{vuelo.nombre_pais_aeropuerto}}</p>
+          <p>Fecha : {{vuelo.fecha_vuelo | date}} </p>
+          <p>Hora : {{vuelo.duracion_vuelo}}</p>
+          <p>Piloto : {{vuelo.nombre_piloto}}</p>
         </mat-card-content>
       </mat-card>
     </div>
