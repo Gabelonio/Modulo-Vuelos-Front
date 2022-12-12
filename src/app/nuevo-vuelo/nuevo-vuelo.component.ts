@@ -34,13 +34,11 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   public aerolineasCargadas : Aerolinea[] = [];
   public airportsSuscripcion : Subscription;
   public aeropuertosCargados : Aeropuerto[] = [];
-  public pilotsSuscripcion : Subscription;
   public pilotosCargados : Piloto[] = [];
   public cuadrosInformativosNuevoVuelo : CuadroInformativo[] = [];
   public cuadrosInformativosConexion : CuadroInformativo[] = [];
   /* ================================================================================================ */
   public vuelosFromAerolinea : Vuelo[] = [];
-  public vuelosSuscripcion: Subscription;
   public aeropuertosFromVuelo : Aeropuerto[] = [];
 
   cambiarConexionHabilitada(habilitado : boolean){
@@ -182,8 +180,6 @@ export class NuevoVueloComponent implements OnInit, OnDestroy {
   ngOnDestroy(){
     this.airlinesSuscripcion.unsubscribe();
     this.airportsSuscripcion.unsubscribe();
-    this.pilotsSuscripcion.unsubscribe();
-    this.vuelosSuscripcion.unsubscribe();
   }
 
   /* Funciones Referentes a la validacion de datos */

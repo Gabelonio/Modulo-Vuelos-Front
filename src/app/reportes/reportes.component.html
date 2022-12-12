@@ -1,1 +1,58 @@
-<p>reportes works!</p>
+<div class = "main-container">
+    <div class = "segmentos-container">
+      <h1>Nuevo vuelo</h1>
+      <div>
+        <form [formGroup]="formularioItinerario">
+          <mat-form-field appearance="fill" class = "forma-input">
+            <mat-label>Aeropuerto Origen</mat-label>
+            <mat-select [formControl]="aeropuertoOrigen">
+              <mat-option *ngFor="let aeropuerto of aeropuertosCargados" [value]="aeropuerto.airport_AirportCode_PK" >
+                {{aeropuerto.airport_AirportName}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="aeropuertoOrigen.invalid">{{getErrorMensaje(aeropuertoOrigen, 'aeropuerto')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class = "forma-input">
+            <mat-label>Aeropuerto Destino</mat-label>
+            <mat-select [formControl]="aeropuertoDestino">
+              <mat-option *ngFor="let aeropuerto of aeropuertosCargados" [value]="aeropuerto.airport_AirportCode_PK" >
+                {{aeropuerto.airport_AirportName}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="aeropuertoDestino.invalid">{{getErrorMensaje(aeropuertoDestino, 'aeropuerto')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field disabled="fill">
+            <mat-label>Fecha de partida</mat-label>
+            <input matInput [matDatepicker]="picker" [formControl]="fechaPartida">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="fechaPartida.invalid">{{getErrorMensaje(fechaPartida, 'Fecha de Partida')}}</mat-error>
+          </mat-form-field>
+          <button
+            type = "submit"
+            class = "boton-generar"
+            (click) = "generarItinerarios()"
+            mat-raised-button>Consultar
+          </button><!-- Boton para Consultar Itinerarios -->
+        </form>
+      </div>
+    </div><!-- Formulario Generador de Segmentos -->
+    <div class = "segmentos-viewer" *ngIf = "isItinerariosDisponibles">
+      <h1>Itinerarios</h1>
+<!--       <mat-card class="segmento-card" *ngFor = "let vuelo of cuadrosInformativosNuevoVuelo">
+        <mat-card-content>
+          <p>Vuelo : {{vuelo.aerolinea_vuelo}}{{vuelo.numero_vuelo}}</p>
+          <p>Aerolinea : {{vuelo.nombre_aerolinea}} </p>
+          <p>Aeropuerto : {{vuelo.nombre_aeropuerto}} </p>
+          <p>Ciudad : {{vuelo.ciudad_aeropuerto}} </p>
+          <p>{{vuelo.descripcion_division_aeropuerto}} : {{vuelo.nombre_division_aeropuerto}}</p>
+          <p>Pais : {{vuelo.nombre_pais_aeropuerto}}</p>
+          <p>Fecha : {{vuelo.fecha_vuelo | date}} </p>
+          <p>Hora : {{vuelo.duracion_vuelo}}</p>
+          <p>Piloto : {{vuelo.nombre_piloto}}</p>
+        </mat-card-content>
+      </mat-card> -->
+    </div>
+</div>
+
